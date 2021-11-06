@@ -1,18 +1,22 @@
-import React from "react";
+import React, { SelectHTMLAttributes } from "react";
 import { Select } from "./style";
 type option = {
   value: string | number;
   label: string | number;
 };
-interface ISelectInputProps {
+interface ISelectInputProps extends SelectHTMLAttributes<HTMLSelectElement> {
   options: Array<option>;
 }
 
-const SelectInput: React.FC<ISelectInputProps> = ({ options }) => {
+const SelectInput: React.FC<ISelectInputProps> = ({ options, ...rest }) => {
   return (
-    <Select>
+    <Select {...rest}>
       {options.map((option) => {
-        return <option value={option.value}>{option.label}</option>;
+        return (
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
+        );
       })}
     </Select>
   );

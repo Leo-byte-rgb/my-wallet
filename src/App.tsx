@@ -1,14 +1,11 @@
 import React from "react";
 import GlobalStyles from "./styles/GlobalStyles";
-import Layout from "./components/Layout/index";
-import { ThemeProvider } from "styled-components";
-import DarkTheme from "./styles/themes/dark";
-import LightTheme from "./styles/themes/light";
+import { ThemeProvider } from "./Contexts/themeProvider";
 import { BrowserRouter as Router } from "react-router-dom";
 import Routes from "./routes/index";
 const App: React.FC = () => {
   return (
-    <ThemeProvider theme={DarkTheme}>
+    <ThemeProvider>
       <GlobalStyles />
       <Router>
         <Routes />

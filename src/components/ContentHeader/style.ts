@@ -10,6 +10,17 @@ export const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 25px;
+  button {
+    width: 100px;
+    height: 25px;
+    border-radius: 5px;
+    background-color: ${(props) => props.theme.color.warning};
+    color: ${(props) => props.theme.color.white};
+    transition: all 0.3s;
+    &:hover {
+      filter: brightness(0.8);
+    }
+  }
 `;
 export const TitleContainer = styled.div<IContainerProps>`
   > h1 {

@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { Toggle, ToggleContainer} from './style';
+import React from "react";
+import { useTheme } from "../../hooks/useTheme";
+import { Toggle, ToggleContainer } from "./style";
 
-const ToggleComponent: React.FC = () => {
-      const [toggle, setToggle] = useState(false);
-    return (
-      <ToggleContainer onClick={() => setToggle(!toggle)}>
-        Light <Toggle isToggled={toggle} /> Dark
-      </ToggleContainer>
-    );
+interface IToggleComponent {
+  additionalAction?: () => void;
 }
+
+const ToggleComponent: React.FC<IToggleComponent> = ({ additionalAction }) => {
+  const { theme } = useTheme();
+  return (
+    <ToggleContainer onClick={() => !!additionalAction && additionalAction()}>
+      Light <Toggle isToggled={theme === "Dark" ? true : false} /> Dark
+    </ToggleContainer>
+  );
+};
 
 export default ToggleComponent;
