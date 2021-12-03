@@ -1,4 +1,6 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+
 export const Container = styled.aside`
   grid-area: AS;
   color: ${(props) => props.theme.color.white};
@@ -23,7 +25,7 @@ export const MenuContainer = styled.nav`
   flex-direction: column;
   gap: 20px;
 `;
-export const MenuItemLink = styled.a`
+export const MenuItemLink = styled(Link)`
   color: ${(props) => props.theme.color.info};
   text-decoration: none;
   transition: opacity 0.3s;
