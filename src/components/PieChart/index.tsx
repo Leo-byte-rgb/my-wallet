@@ -8,25 +8,36 @@ import {
   Legend,
 } from './styled';
 
-const PieChartComponent: React.FC = () => (
+interface IChartData {
+  data: {
+    name: string;
+    value: number;
+    percent: number;
+    color: string;
+  }[];
+}
+const PieChartComponent: React.FC<IChartData> = ({ data }) => (
   <Container>
     <SideLeft>
       <LegendContainer>
+        {console.log(data)}
         <h2>Relação</h2>
-        <Legend color='#F7931B'>
-          <div>90%</div>
-          <span>Saídas</span>
-        </Legend>
-        <Legend color='#E44C4E'>
-          <div>10%</div>
-          <span>Entradas</span>
-        </Legend>
+        {data.map(({ percent, name, color }) => (
+          <Legend color={color} key={name}>
+            <div>{percent.toFixed(1)}</div>
+            <span>{name}</span>
+          </Legend>
+        ))}
       </LegendContainer>
     </SideLeft>
     <SideRight>
       <ResponsiveContainer>
         <PieChart>
-          <Pie data={[]} labelLine={false} dataKey='percent'></Pie>
+          <Pie data={data} dataKey='percent'>
+            {data.map(({ name, color }) => (
+              <Cell fill={color} key={name} />
+            ))}
+          </Pie>
         </PieChart>
       </ResponsiveContainer>
     </SideRight>

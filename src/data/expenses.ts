@@ -2,7 +2,7 @@
 export default [
   {
     description: 'Energia elétrica',
-    amount: '150.55',
+    amount: '450.55',
     type: 'saída',
     frequency: 'recorrente',
     date: '2021-01-10',
@@ -79,7 +79,7 @@ export default [
   },
   {
     description: 'Compras do mês',
-    amount: '540.00',
+    amount: '240.00',
     type: 'saída',
     frequency: 'recorrente',
     date: '2021-02-25',

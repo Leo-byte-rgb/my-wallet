@@ -1,18 +1,18 @@
-import { IData } from "../../../types/Data";
+import { IData } from '../../../types/Data';
 
-const months = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
+export const months = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
 ];
 
 export const getUniqueYearsByData = (data: IData[]) => {
@@ -24,9 +24,15 @@ export const getUniqueYearsByData = (data: IData[]) => {
   return years.map((year) => ({ value: String(year), label: String(year) }));
 };
 
-export const getUniqueMonthsByData = () => {
-  return months.map((month, index) => ({
-    value: index + 1,
-    label: month,
+export const getUniqueMonthsByData = (data: IData[]) => {
+  const monthList: number[] = [];
+  data.forEach(({ date }) => {
+    const month = new Date(date).getMonth();
+    if (!monthList.includes(month)) monthList.push(month);
+  });
+
+  return monthList.map((month) => ({
+    value: month + 1,
+    label: months[month],
   }));
 };

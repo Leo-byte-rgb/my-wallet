@@ -5,6 +5,8 @@ import SelectInput from '../../components/Select';
 import WalletBox from '../../components/WalletBox';
 import PieChart from '../../components/PieChart';
 import MessageBox from '../../Containers/MessageBox';
+import HistoryBox from '../../components/HistoryBox';
+import BarChartComponent from '../../components/BarChart';
 
 import gains from '../../data/gains';
 import expenses from '../../data/expenses';
@@ -31,7 +33,7 @@ interface IRouteParams {
 
 const Dashboard: React.FC<IRouteParams> = () => {
   const [selectedDate, setSelectedDate] = useState<DateProps>({
-    month: new Date().getMonth() + 1,
+    month: 1,
     year: new Date().getFullYear(),
   });
 
@@ -42,7 +44,7 @@ const Dashboard: React.FC<IRouteParams> = () => {
 
   const data = useMemo(() => [...gains, ...expenses], []);
 
-  const months = useMemo(() => getUniqueMonthsByData(), []);
+  const months = useMemo(() => getUniqueMonthsByData(data), [data]);
   const years = useMemo(() => getUniqueYearsByData(data), [data]);
 
   const getTotalExpenses = () => {
@@ -83,13 +85,136 @@ const Dashboard: React.FC<IRouteParams> = () => {
   const relationExpensesVersusGains = useMemo(() => {
     const total = totalGains + totalExpenses;
 
-    const percentGains = ((totalGains / total) * 100).toFixed(1);
-    const percentExpenses = ((totalExpenses / total) * 100).toFixed(1);
+    const percentGains = (totalGains / total) * 100;
+    const percentExpenses = (totalExpenses / total) * 100;
 
-    return [];
+    const data = [
+      {
+        name: 'Entradas',
+        value: totalExpenses,
+        percent: isNaN(percentGains) ? 50 : percentGains,
+        color: '#E44C4E',
+      },
+      {
+        name: 'Saídas',
+        value: totalGains,
+        percent: isNaN(percentExpenses) ? 50 : percentExpenses,
+        color: '#F7931B',
+      },
+    ];
+    return data;
   }, [totalExpenses, totalGains]);
+  console.log(months);
+  const historyData = useMemo(() => {
+    return months.map(({ value, label }) => {
+      let amountEntry = 0;
+      let amountOutput = 0;
 
-  console.log(relationExpensesVersusGains);
+      gains.forEach(({ date, amount }) => {
+        const gainMounth = new Date(date).getMonth() + 1;
+        const gainYear = new Date(date).getFullYear();
+
+        if (gainMounth === value && gainYear === selectedDate.year) {
+          try {
+            amountEntry += Number(amount);
+          } catch {
+            throw new Error('Amount Entry must be valid number');
+          }
+        }
+      });
+      expenses.forEach(({ date, amount }) => {
+        const gainMounth = new Date(date).getMonth() + 1;
+        const gainYear = new Date(date).getFullYear();
+
+        if (gainMounth === value && gainYear === selectedDate.year) {
+          try {
+            amountOutput += Number(amount);
+          } catch {
+            throw new Error('Amount Entry must be valid number');
+          }
+        }
+      });
+      return {
+        monthNumber: value,
+        month: label.substring(0, 3),
+        amountEntry,
+        amountOutput,
+      };
+    });
+  }, [months, selectedDate.year]);
+
+  const relationExpenseRecurrentVersusEventual = useMemo(() => {
+    let amountRecurent = 0;
+    let amountEventual = 0;
+
+    expenses
+      .filter(({ frequency, date }) => {
+        const month = new Date(date).getMonth() + 1;
+        const year = new Date(date).getFullYear();
+
+        return month === selectedDate.month && year === selectedDate.year;
+      })
+      .forEach(({ frequency, amount }) => {
+        if (frequency === 'recorrente') {
+          return (amountRecurent += Number(amount));
+        }
+        return (amountEventual += Number(amount));
+      });
+
+    const total = Number(amountRecurent + amountEventual);
+
+    return [
+      {
+        name: 'Recorrente',
+        amount: amountRecurent,
+        percent: Number(((amountRecurent / total) * 100).toFixed(1)),
+        color: '#F7931B',
+      },
+      {
+        name: 'Eventual',
+        amount: amountEventual,
+        percent: Number(((amountEventual / total) * 100).toFixed(1)),
+        color: '#E44C4E',
+      },
+    ];
+  }, [selectedDate.month, selectedDate.year]);
+
+  const relationGainsRecurrentVersusEventual = useMemo(() => {
+    let amountRecurent = 0;
+    let amountEventual = 0;
+
+    gains
+      .filter(({ frequency, date }) => {
+        const month = new Date(date).getMonth() + 1;
+        const year = new Date(date).getFullYear();
+
+        return month === selectedDate.month && year === selectedDate.year;
+      })
+      .forEach(({ frequency, amount }) => {
+        if (frequency === 'recorrente') {
+          return (amountRecurent += Number(amount));
+        }
+        return (amountEventual += Number(amount));
+      });
+
+    const total = Number(amountRecurent + amountEventual);
+
+    return [
+      {
+        name: 'Recorrente',
+        amount: amountRecurent,
+        percent: Number(((amountRecurent / total) * 100).toFixed(1)),
+        color: '#F7931B',
+      },
+      {
+        name: 'Eventual',
+        amount: amountEventual,
+        percent: Number(((amountEventual / total) * 100).toFixed(1)),
+        color: '#E44C4E',
+      },
+    ];
+  }, [selectedDate.month, selectedDate.year]);
+
   return (
     <Container>
       <ContentHeader title='Dashboard' lineColor='#E44C4E'>
@@ -124,7 +249,21 @@ const Dashboard: React.FC<IRouteParams> = () => {
           icon='arrowDownIcon'
         />
         <MessageBox balance={totalBalance} />
-        <PieChart />
+        <PieChart data={relationExpensesVersusGains} />
+
+        <HistoryBox
+          data={historyData}
+          lineColorAmountEntry='#E7931B'
+          lineColorAmountOutput='#E44C4E'
+        />
+        <BarChartComponent
+          title='Saídas'
+          data={relationExpenseRecurrentVersusEventual}
+        />
+        <BarChartComponent
+          title='Saídas'
+          data={relationGainsRecurrentVersusEventual}
+        />
       </Content>
     </Container>
   );
